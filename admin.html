@@ -1,0 +1,33 @@
+from menu import add_item, edit_item, delete_item, view_menu
+from order import view_all_orders, update_order_status
+
+def admin_dashboard(user):
+    while True:
+        print("\n--- Admin Dashboard ---")
+        print("1. View Menu")
+        print("2. Add Item")
+        print("3. Edit Item")
+        print("4. Delete Item")
+        print("5. View All Orders")
+        print("6. Update Order Status")
+        print("7. Logout")
+
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            view_menu()
+        elif choice == "2":
+            add_item()
+        elif choice == "3":
+            edit_item()
+        elif choice == "4":
+            delete_item()
+        elif choice == "5":
+            view_all_orders()
+        elif choice == "6":
+            update_order_status()
+        elif choice == "7":
+            print("Logging out...")
+            break
+        else:
+            print("Invalid choice!")

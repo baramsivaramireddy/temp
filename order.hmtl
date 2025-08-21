@@ -1,0 +1,58 @@
+from db import get_connection
+
+def place_order(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    items = []
+    total = 0
+    while True:
+        item_id = input("Enter item ID to add (or 'done' to finish): ")
+        if item_id.lower() == "done":
+            break
+        qty = int(input("Enter quantity: "))
+        cursor.execute("SELECT name, price FROM menu WHERE item_id=?", (item_id,))
+        item = cursor.fetchone()
+        if item:
+            items.append(f"{item[0]} x{qty}")
+            total += item[1] * qty
+        else:
+            print("Invalid item ID")
+
+    if items:
+        cursor.execute("INSERT INTO orders (user_id, items, total) VALUES (?, ?, ?)", (user_id, ", ".join(items), total))
+        conn.commit()
+        print(f"Order placed! Total = ₹{total}")
+    conn.close()
+
+def view_order_history(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM orders WHERE user_id=?", (user_id,))
+    orders = cursor.fetchall()
+    conn.close()
+
+    print("\n--- Order History ---")
+    for order in orders:
+        print(f"Order ID: {order[0]}, Items: {order[2]}, Total: ₹{order[3]}, Status: {order[4]}")
+
+def view_all_orders():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM orders")
+    orders = cursor.fetchall()
+    conn.close()
+
+    print("\n--- All Orders ---")
+    for order in orders:
+        print(f"Order ID: {order[0]}, User: {order[1]}, Items: {order[2]}, Total: ₹{order[3]}, Status: {order[4]}")
+
+def update_order_status():
+    order_id = input("Enter order ID: ")
+    new_status = input("Enter new status (Pending/Preparing/Delivered): ")
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE orders SET status=? WHERE order_id=?", (new_status, order_id))
+    conn.commit()
+    conn.close()
+    print("Order status updated!")

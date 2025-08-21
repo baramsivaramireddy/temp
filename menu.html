@@ -1,0 +1,62 @@
+from db import get_connection
+
+def view_menu():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM menu WHERE availability=1")
+    items = cursor.fetchall()
+    conn.close()
+
+    print("\n\t\t--- Menu ---\n")
+    if items:
+        print('ID\tDish\t\tPrice')
+    for item in items:
+        print(f"{item[0]}. {item[1]} ({item[2]})  ₹{item[3]}")
+
+def search_menu(keyword):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM menu WHERE name LIKE ? OR category LIKE ?", (f"%{keyword}%", f"%{keyword}%"))
+    items = cursor.fetchall()
+    conn.close()
+
+    if items:
+        print("\n--- Search Results ---")
+        for item in items:
+            print(f"{item[0]}. {item[1]} ({item[2]}) - ₹{item[3]}")
+    else:
+        print("No items found.")
+
+def add_item():
+    name = input("Enter item name: ")
+    category = input("Enter category: ")
+    price = float(input("Enter price: "))
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO menu (name, category, price) VALUES (?, ?, ?)", (name, category, price))
+    conn.commit()
+    conn.close()
+    print("Item added successfully!")
+
+def edit_item():
+    item_id = input("Enter item ID to edit: ")
+    name = input("New name: ")
+    category = input("New category: ")
+    price = float(input("New price: "))
+    availability = int(input("Available? (1=Yes, 0=No): "))
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE menu SET name=?, category=?, price=?, availability=? WHERE item_id=?", 
+                   (name, category, price, availability, item_id))
+    conn.commit()
+    conn.close()
+    print("Item updated successfully!")
+
+def delete_item():
+    item_id = input("Enter item ID to delete: ")
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM menu WHERE item_id=?", (item_id,))
+    conn.commit()
+    conn.close()
+    print("Item deleted successfully!")

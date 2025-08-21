@@ -1,0 +1,39 @@
+from db import init_db
+from auth import register_user, login, register_admin
+from customer import customer_dashboard
+from admin import admin_dashboard
+
+def main():
+    init_db()
+    print("=== Welcome to Vaseem's Canteen ===")
+    
+    while True:
+        print("\n1. Register\n2. Login\n3. Exit")
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            user_id = input("User ID: ")
+            name = input("Name: ")
+            email = input("Email: ")
+            address = input("Address: ")
+            phone = input("Phone: ")
+            password = input("Password: ")
+            register_user(user_id, name, email, address, phone, password)
+        elif choice == "2":
+            user_id = input("User ID: ")
+            password = input("Password: ")
+            user = login(user_id, password)
+            if user:
+                if user["role"] == "customer":
+                    customer_dashboard(user)
+                elif user["role"] == "admin":
+                    admin_dashboard(user)
+        elif choice == "3":
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice!")
+
+if __name__ == "__main__":
+    #register_admin()
+    main()

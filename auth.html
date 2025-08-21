@@ -1,0 +1,40 @@
+import sqlite3
+from db import get_connection
+from utils import hash_password, check_password
+
+def register_user(user_id, name, email, address, phone, password, role="customer"):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO users (user_id, name, email, address, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                       (user_id, name, email, address, phone, hash_password(password), role))
+        conn.commit()
+        print("Registration successful!")
+    except sqlite3.IntegrityError:
+        print("User ID or Email already exists.")
+    conn.close()
+
+def login(user_id, password):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT user_id, name, password, role FROM users WHERE user_id=?", (user_id,))
+    user = cursor.fetchone()
+    conn.close()
+
+    if user and check_password(password, user[2]):
+        print(f"Login successful! \nWelcome {user[1]} ({user[3]})")
+        return {"user_id": user[0], "name": user[1], "role": user[3]}
+    else:
+        print("Invalid credentials.")
+        return None
+
+def register_admin():
+    user_id = 823
+    name = "Vaseem"
+    email = "vaseem24@gmail.com"
+    address = "15, HSR Layout, Whitefield."
+    phone = "+91 9043434738"
+    password = "vaseem#01@tcs"
+
+    register_user(user_id, name, email, address, phone, password, role="admin")
+

@@ -1,0 +1,54 @@
+from db import get_connection
+
+def view_users():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users")
+    rows = cursor.fetchall()
+    conn.close()
+
+    print("\n=== Users Table ===")
+    if rows:
+        for row in rows:
+            print(f"UserID: {row[0]}, Name: {row[1]}, Email: {row[2]}, Address: {row[3]}, Phone: {row[4]}, Role: {row[6]}")
+    else:
+        print("No users found.")
+
+def view_menu():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM menu")
+    rows = cursor.fetchall()
+    conn.close()
+
+    print("\n=== Menu Table ===")
+    if rows:
+        for row in rows:
+            print(f"ItemID: {row[0]}, Name: {row[1]}, Category: {row[2]}, Price: {row[3]}, Available: {row[4]}")
+    else:
+        print("No menu items found.")
+
+def view_orders():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM orders")
+    rows = cursor.fetchall()
+    conn.close()
+
+    print("\n=== Orders Table ===")
+    if rows:
+        for row in rows:
+            print(f"OrderID: {row[0]}, UserID: {row[1]}, Items: {row[2]}, Total: {row[3]}, Status: {row[4]}")
+    else:
+        print("No orders found.")
+
+def view_database():
+    print("\n============================")
+    print("Canteen Management Database\n")
+    print("============================\n")
+    view_users()
+    view_menu()
+    view_orders()
+
+if __name__ == "__main__":
+    view_database()
